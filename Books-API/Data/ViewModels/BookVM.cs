@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Books_API.Data.Models
+namespace Books_API.Data.ViewModels
 {
-    public class Book
+    public class BookVM
     {
-        public int Id { get; set; }
         public string Title { get; set; }
         public string Describtion { get; set; }
         public bool IsRead { get; set; }
@@ -16,6 +15,6 @@ namespace Books_API.Data.Models
         public string Ganre { get; set; }
         public string Author { get; set; }
         public string CoverUrl { get; set; }
-        public DateTime DateAdded { get; set; }
+
     }
 }
