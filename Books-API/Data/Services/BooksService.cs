@@ -15,7 +15,7 @@ namespace Books_API.Data.Services
             _context = context;   
         }
 
-        public void AddBook(BookVM book)
+        public void AddBookWithAuthors(BookVM book)
         {
             var _book = new Book()
             {
@@ -25,13 +25,26 @@ namespace Books_API.Data.Services
                 DateRead = book.IsRead ? book.DateRead.Value : null,
                 Rate = book.IsRead ? book.Rate.Value : null,
                 Ganre = book.Ganre,
-                Author = book.Author,
                 CoverUrl = book.CoverUrl,
-                DateAdded = DateTime.Now
+                DateAdded = DateTime.Now,
+                PublisherId = book.PublisherId,
+
             };
 
             _context.Books.Add(_book);
             _context.SaveChanges();
+
+            foreach(var id in book.AuthorIds)
+            {
+                var _book_author = new Book_Author()
+                {
+                    BookId = _book.Id,
+                    AuthorId = id
+                };
+
+                _context.Book_Authors.Add(_book_author);
+                _context.SaveChanges();
+            }
         }
 
         public List<Book> GetAllBooks()
@@ -40,10 +53,22 @@ namespace Books_API.Data.Services
             return allBooks;
         }
 
-        public Book GetBookByParameter(int bookId)
+        public BookWithAuthorsVM GetBookByParameter(int bookId)
         {
-            var specyficBook = _context.Books.FirstOrDefault(n => n.Id == bookId);
-            return specyficBook;
+            var _bookWithAuthors = _context.Books.Where(n => n.Id == bookId).Select(book => new BookWithAuthorsVM()
+            {
+                Title = book.Title,
+                Describtion = book.Describtion,
+                IsRead = book.IsRead,
+                DateRead = book.IsRead ? book.DateRead.Value : null,
+                Rate = book.IsRead ? book.Rate.Value : null,
+                Ganre = book.Ganre,
+                CoverUrl = book.CoverUrl,
+                PublisherName = book.Publishers.Name,
+                AuthorNames = book.Book_Authors.Select(n => n.Author.FullName).ToList()
+            }).FirstOrDefault();
+
+            return _bookWithAuthors;
         }
 
         public Book UpdateBookById(int bookId, BookVM book)
@@ -57,7 +82,6 @@ namespace Books_API.Data.Services
                 _book.DateRead = book.IsRead ? book.DateRead.Value : null;
                 _book.Rate = book.IsRead ? book.Rate.Value : null;
                 _book.Ganre = book.Ganre;
-                _book.Author = book.Author;
                 _book.CoverUrl = book.CoverUrl;
 
                 _context.SaveChanges();

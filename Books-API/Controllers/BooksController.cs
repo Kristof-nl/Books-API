@@ -34,12 +34,12 @@ namespace Books_API.Controllers
             return Ok(specificbook);
         }
 
-        [HttpPost("add-book")]
+        [HttpPost("add-book-with-authors")]
         public IActionResult AddBook([FromBody]BookVM book)
         {
-            _booksService.AddBook(book);
+            _booksService.AddBookWithAuthors(book);
             return Ok();
-        }
+        }   
 
         [HttpPut("update-book-by-id/{id}")]
         public IActionResult UpdateBookById(int id, [FromBody]BookVM book)
